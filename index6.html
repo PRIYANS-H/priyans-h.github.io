@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priyansh Chaudhary — Signal</title>
+<meta name="description" content="Priyansh Chaudhary — Data Science undergraduate at IIT Madras. Quant research, ML systems, and full-stack builds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root{
+    --bg:#F2EFE6;
+    --bg-2:#E7E2D3;
+    --fg:#181712;
+    --dim:#6E6A5C;
+    --lime:#3F6B2E;
+    --violet:#4B3F91;
+    --line:rgba(24,23,18,0.12);
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:'Space Grotesk',sans-serif;line-height:1.6;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  ::selection{background:var(--lime);color:var(--bg);}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;position:relative;}
+  a{color:inherit;}
+  h1,h2,h3{margin:0;font-weight:600;letter-spacing:-0.02em;}
+
+  .skip-link{position:absolute;left:-9999px;top:0;background:var(--lime);color:var(--bg);padding:10px 16px;z-index:200;font-weight:600;}
+  .skip-link:focus{left:16px;top:16px;}
+
+  /* custom cursor glow */
+  #glow{
+    position:fixed;width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:1;
+    background:radial-gradient(circle, rgba(63,107,46,0.10), transparent 70%);
+    transform:translate(-50%,-50%);will-change:transform;transition:opacity .3s;
+  }
+  @media(hover:none){#glow{display:none;}}
+
+  header{position:sticky;top:0;z-index:60;background:rgba(10,10,11,0.85);backdrop-filter:blur(10px);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:var(--maxw);margin:0 auto;}
+  .brand{font-family:'IBM Plex Mono',monospace;font-size:0.9rem;font-weight:600;display:flex;align-items:center;gap:9px;}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 rgba(63,107,46,0.5);animation:pulse 2s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(63,107,46,0.45);}
+    70%{box-shadow:0 0 0 8px rgba(63,107,46,0);}
+    100%{box-shadow:0 0 0 0 rgba(63,107,46,0);}
+  }
+  .navlinks{display:flex;gap:30px;list-style:none;margin:0;padding:0;font-size:0.9rem;}
+  .navlinks a{text-decoration:none;color:var(--dim);transition:color .2s;}
+  .navlinks a:hover,.navlinks a:focus-visible{color:var(--fg);}
+  .navlinks a:focus-visible{outline:2px solid var(--lime);outline-offset:4px;}
+  .navcta{
+    font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--bg);background:var(--lime);
+    padding:9px 18px;border-radius:999px;text-decoration:none;font-weight:600;white-space:nowrap;
+    transition:transform .2s;
+  }
+  .navcta:hover,.navcta:focus-visible{transform:scale(1.04);}
+  .menu-toggle{display:none;background:none;border:none;color:var(--fg);font-size:1.5rem;cursor:pointer;}
+
+  /* ticker */
+  .ticker-bar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;background:var(--bg-2);}
+  .ticker-track{display:inline-block;padding:10px 0;animation:scroll-left 34s linear infinite;}
+  .ticker-track span{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--dim);margin-right:44px;}
+  .ticker-track span b{color:var(--lime);font-weight:600;}
+  @keyframes scroll-left{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @media(prefers-reduced-motion:reduce){.ticker-track{animation:none;}}
+
+  /* hero */
+  .hero{position:relative;padding:100px 0 70px;overflow:hidden;min-height:640px;}
+  #hero3d{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+  .hero::after{
+    content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg, rgba(242,239,230,0.10) 0%, rgba(242,239,230,0.55) 65%, var(--bg) 100%);
+  }
+  .hero .wrap{z-index:2;position:relative;}
+
+  /* magnetic buttons */
+  .btn{position:relative;will-change:transform;}
+
+  /* 3D tilt cards */
+  .card{transform-style:preserve-3d;will-change:transform;}
+  .card-tilt-inner{transform:translateZ(20px);}
+
+  /* animated counters get a subtle glow when active */
+  .stat .num.counting{text-shadow:0 0 14px rgba(63,107,46,0.4);}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--lime);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:22px;display:block;}
+  .hey-line{font-family:'IBM Plex Mono',monospace;font-size:1rem;color:var(--dim);margin:0 0 6px;letter-spacing:0.02em;}
+  .kinetic-name{font-size:clamp(2.6rem,8vw,5.8rem);line-height:0.95;letter-spacing:-0.03em;}
+  .role-rotator-wrap{height:clamp(2.8rem,8vw,6rem);overflow:hidden;margin-top:2px;}
+  .role-rotator{
+    display:inline-block;font-size:clamp(2.2rem,7vw,5rem);font-weight:700;line-height:1;
+    letter-spacing:-0.02em;color:var(--lime);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .kinetic-name span{display:inline-block;transition:transform .25s ease, color .25s ease;}
+  .kinetic-name span:hover{transform:translateY(-6px);color:var(--lime);}
+  .hero .role{margin-top:20px;font-size:clamp(1.1rem,2.4vw,1.5rem);color:var(--dim);max-width:38ch;}
+  .hero .role em{font-style:normal;color:var(--fg);border-bottom:2px solid var(--violet);}
+  .hero-actions{display:flex;gap:16px;margin-top:38px;flex-wrap:wrap;}
+  .btn{font-family:'IBM Plex Mono',monospace;font-size:0.85rem;text-decoration:none;padding:14px 26px;border-radius:999px;display:inline-block;transition:transform .18s, background .2s;}
+  .btn-primary{background:var(--lime);color:var(--bg);font-weight:700;}
+  .btn-primary:hover,.btn-primary:focus-visible{transform:scale(1.04);}
+  .btn-ghost{border:1px solid var(--line);color:var(--fg);}
+  .btn-ghost:hover,.btn-ghost:focus-visible{border-color:var(--fg);}
+  .btn:focus-visible{outline:2px solid var(--lime);outline-offset:3px;}
+
+  section{padding:100px 0;border-top:1px solid var(--line);position:relative;}
+
+  /* mosaic photo reveal */
+  .mosaic-reveal{text-align:center;margin-bottom:90px;}
+  .mosaic-hint{
+    font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--dim);
+    text-transform:uppercase;letter-spacing:0.12em;display:inline-flex;align-items:center;gap:8px;margin-bottom:28px;
+  }
+  .mosaic-grid{
+    display:grid;grid-template-columns:repeat(6, 1fr);gap:6px;
+    width:min(78vw, 300px);aspect-ratio:6/7;margin:0 auto;
+  }
+  .tile{border-radius:3px;background:var(--bg-2);opacity:0;transform:scale(0.4);transition:opacity .5s ease, transform .5s ease;background-repeat:no-repeat;}
+  .mosaic-grid.in .tile{opacity:1;transform:scale(1);}
+  .mosaic-headline{
+    font-family:'Newsreader',serif;font-weight:500;font-size:clamp(1.8rem,4.5vw,3rem);
+    margin-top:34px;color:var(--fg);
+  }
+  .mosaic-headline em{font-style:italic;color:var(--lime);}
+  .mosaic-sub{color:var(--dim);font-size:1rem;max-width:44ch;margin:14px auto 0;}
+  .mosaic-note{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--dim);margin-top:18px;opacity:0.7;}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}}
+
+  .section-head{margin-bottom:50px;max-width:60ch;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-head h2{font-size:clamp(1.9rem,4vw,2.8rem);}
+  .section-head p{color:var(--dim);margin-top:14px;font-size:1rem;}
+
+  /* about */
+  .about-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:start;}
+  @media(max-width:760px){.about-grid{grid-template-columns:1fr;gap:40px;}}
+  .about-copy p{color:var(--dim);font-size:1.05rem;margin:0 0 20px;max-width:54ch;}
+  .about-copy p em{font-style:normal;color:var(--fg);}
+  .shelf-label{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--violet);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;display:block;}
+  .shelf{list-style:none;margin:0 0 36px;padding:0;}
+  .shelf li{padding:11px 0;border-bottom:1px solid var(--line);font-size:0.94rem;color:var(--dim);display:flex;justify-content:space-between;gap:12px;}
+  .shelf li:last-child{border-bottom:none;}
+  .shelf li b{color:var(--fg);font-weight:500;}
+  .shelf li span{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:var(--dim);white-space:nowrap;padding-top:2px;}
+  .pull-quote{border-left:2px solid var(--lime);padding:20px 0 20px 24px;margin:0;background:var(--bg-2);border-radius:0 6px 6px 0;}
+  .pull-quote p{font-size:1.2rem;color:var(--fg);margin:0;line-height:1.5;padding-right:16px;}
+  .pull-quote cite{display:block;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:0.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.06em;}
+
+  /* chips */
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;}
+  .chip{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;background:transparent;border:1px solid var(--line);color:var(--dim);padding:9px 18px;border-radius:999px;cursor:pointer;transition:all .2s;}
+  .chip:hover{border-color:var(--dim);color:var(--fg);}
+  .chip[aria-pressed="true"]{background:var(--lime);color:var(--bg);border-color:var(--lime);font-weight:700;}
+  .chip:focus-visible{outline:2px solid var(--lime);outline-offset:2px;}
+
+  /* project cards */
+  .projects-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media(max-width:760px){.projects-grid{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:14px;padding:28px;background:var(--bg-2);transition:border-color .25s, transform .25s;display:flex;flex-direction:column;}
+  .card:hover{border-color:var(--lime);transform:translateY(-4px);}
+  .card-tag{font-family:'IBM Plex Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--lime);margin-bottom:14px;}
+  .card-tag.sys{color:var(--violet);}
+  .card h3{font-size:1.25rem;margin-bottom:10px;}
+  .card p{color:var(--dim);font-size:0.94rem;flex-grow:1;}
+  .card-stack{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0;font-family:'IBM Plex Mono',monospace;font-size:0.7rem;color:var(--dim);}
+  .card-stack span{border:1px solid var(--line);padding:4px 9px;border-radius:999px;}
+  .card-links{display:flex;gap:18px;margin-top:16px;font-size:0.82rem;font-family:'IBM Plex Mono',monospace;}
+  .card-links a{text-decoration:none;color:var(--fg);border-bottom:1px solid var(--lime);padding-bottom:1px;}
+  .card-links a:hover,.card-links a:focus-visible{color:var(--lime);}
+
+  /* research */
+  .research-item{border:1px solid var(--line);border-radius:14px;padding:36px;margin-bottom:22px;background:var(--bg-2);}
+  .research-item h3{font-size:1.4rem;margin-bottom:8px;}
+  .research-meta{font-family:'IBM Plex Mono',monospace;font-size:0.76rem;color:var(--dim);margin-bottom:18px;}
+  .research-item p{color:var(--dim);font-size:0.97rem;}
+  .stat-row{display:flex;gap:32px;flex-wrap:wrap;margin:24px 0;}
+  .stat{font-family:'IBM Plex Mono',monospace;}
+  .stat .num{font-size:1.7rem;color:var(--lime);display:block;font-weight:600;}
+  .stat.neg .num{color:var(--violet);}
+  .stat .lbl{font-size:0.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:0.06em;}
+  .research-links{margin-top:20px;display:flex;gap:22px;font-family:'IBM Plex Mono',monospace;font-size:0.82rem;}
+  .research-links a{text-decoration:none;border-bottom:1px solid var(--lime);padding-bottom:1px;}
+  .research-links a:hover,.research-links a:focus-visible{color:var(--lime);}
+
+  /* skills */
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;}
+  @media(max-width:760px){.skills-grid{grid-template-columns:1fr;}}
+  .skill-group h4{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--violet);margin-bottom:16px;}
+  .skill-group ul{list-style:none;margin:0;padding:0;color:var(--dim);font-size:0.94rem;}
+  .skill-group li{padding:5px 0;border-bottom:1px solid var(--line);}
+  .skill-group li:last-child{border-bottom:none;}
+
+  .edu-item{display:flex;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:6px;}
+  .edu-item:last-child{border-bottom:none;}
+  .edu-item h3{font-size:1.08rem;}
+  .edu-item .inst{color:var(--dim);font-size:0.9rem;}
+  .edu-item .yr{font-family:'IBM Plex Mono',monospace;font-size:0.82rem;color:var(--dim);white-space:nowrap;}
+
+  footer{padding:80px 0 50px;border-top:1px solid var(--line);}
+  .contact-h{font-size:clamp(2.2rem,6vw,4rem);max-width:16ch;letter-spacing:-0.02em;}
+  .contact-links{margin-top:36px;display:flex;flex-wrap:wrap;gap:30px;font-family:'IBM Plex Mono',monospace;font-size:0.94rem;}
+  .contact-links a{text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px;transition:border-color .2s, color .2s;}
+  .contact-links a:hover,.contact-links a:focus-visible{border-color:var(--lime);color:var(--lime);}
+  .foot-note{margin-top:70px;color:var(--dim);font-size:0.8rem;font-family:'IBM Plex Mono',monospace;}
+
+  @media(max-width:640px){
+    .navlinks{position:fixed;top:64px;left:0;right:0;background:var(--bg-2);flex-direction:column;padding:22px 24px;gap:20px;border-bottom:1px solid var(--line);display:none;z-index:59;}
+    .navlinks.open{display:flex;}
+    .menu-toggle{display:block;}
+    .navcta{display:none;}
+  }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+<div id="glow" aria-hidden="true"></div>
+
+<header>
+  <nav aria-label="Primary">
+    <div class="brand"><span class="live-dot" aria-hidden="true"></span>PRIYANSH.CH</div>
+    <button class="menu-toggle" id="menuBtn" aria-expanded="false" aria-controls="navlinks" aria-label="Toggle menu">☰</button>
+    <ul class="navlinks" id="navlinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#skills">Skills</a></li>
+    </ul>
+    <a class="navcta" href="mailto:priyanshchaudhary176@gmail.com">Say hello →</a>
+  </nav>
+  <div class="ticker-bar" aria-hidden="true">
+    <div class="ticker-track">
+      <span><b>NIFTY50</b> HMM regime-switching · Sharpe 0.44</span>
+      <span><b>BANKNIFTY</b> walk-forward retrain · Sharpe 0.95</span>
+      <span><b>FLOWZINT</b> RAG support copilot · 85/100</span>
+      <span><b>KARNATAKA-SCRB</b> 1.6M FIR records · live</span>
+      <span><b>CADT</b> dynamic storage tiering · −85.9% cost</span>
+      <span><b>VIDYAFUND</b> fund-routing platform</span>
+      <span><b>VOTEMATE</b> civic-tech election assistant</span>
+      <span><b>NIFTY50</b> HMM regime-switching · Sharpe 0.44</span>
+      <span><b>BANKNIFTY</b> walk-forward retrain · Sharpe 0.95</span>
+      <span><b>FLOWZINT</b> RAG support copilot · 85/100</span>
+      <span><b>KARNATAKA-SCRB</b> 1.6M FIR records · live</span>
+      <span><b>CADT</b> dynamic storage tiering · −85.9% cost</span>
+      <span><b>VIDYAFUND</b> fund-routing platform</span>
+      <span><b>VOTEMATE</b> civic-tech election assistant</span>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" style="border-top:none;">
+    <div id="hero3d" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="eyebrow">Data Science, IIT Madras &middot; B.S. 2028</span>
+      <p class="hey-line">Hey, I'm</p>
+      <h1 class="kinetic-name" id="kineticName"></h1>
+      <div class="role-rotator-wrap"><span class="role-rotator" id="roleRotator">QUANT RESEARCHER</span></div>
+      <p class="role" style="margin-top:22px;">Curious about almost everything — obsessed with markets since childhood, currently building <em>quant research</em> and full-stack ML systems.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#research">Read the research →</a>
+        <a class="btn btn-ghost" href="#projects">See the builds</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap reveal">
+      <div class="mosaic-reveal">
+        <span class="mosaic-hint">✱ scroll to reveal</span>
+        <div class="mosaic-grid" id="mosaicGrid"></div>
+        <h2 class="mosaic-headline">Hey, I'm <em>Priyansh</em>.</h2>
+        <p class="mosaic-sub">A Data Science undergrad who'd rather ship the backtest than just read about it.</p>
+      </div>
+      <div class="section-head">
+        <span class="eyebrow">Off the resume</span>
+        <h2>Curious by default</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-copy">
+          <p>I want to learn almost everything, which is probably why my projects sprawl across quant research, crime-intelligence dashboards, and civic-tech chatbots instead of staying in one lane. <em>Markets are the one thing I've been curious about the longest</em> — since childhood, long before I had the math for it.</p>
+          <p>These days that curiosity is more structured: working through Ernest Chan and <em>Python for Finance</em>, rebuilding trading systems from scratch instead of just reading about them, and treating every backtest as a way to argue with my own assumptions.</p>
+          <p>Outside of markets and code, I read a lot on how to think and work better — it shapes how I approach problems as much as any technical resource does.</p>
+        </div>
+        <div>
+          <span class="shelf-label">Currently on the shelf</span>
+          <ul class="shelf">
+            <li><b>The Almanack of Naval Ravikant</b><span>Naval Ravikant</span></li>
+            <li><b>Deep Work</b><span>Cal Newport</span></li>
+            <li><b>The Courage to Be Disliked</b><span>Kishimi &amp; Koga</span></li>
+            <li><b>Python for Finance</b><span>Yves Hilpisch</span></li>
+          </ul>
+          <blockquote class="pull-quote">
+            <p>&ldquo;If a problem is stressing you out, drop the stress. The stress doesn't solve the problem &mdash; working on it does.&rdquo;</p>
+            <cite>— a rule I actually try to live by</cite>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap reveal">
+      <div class="section-head">
+        <span class="eyebrow">Selected work</span>
+        <h2>Projects</h2>
+        <p>Filter by what you're here for — the trading systems, or the applied ML and full-stack builds.</p>
+      </div>
+      <div class="chips" role="group" aria-label="Filter projects by category">
+        <button class="chip" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" data-filter="quant" aria-pressed="false">Quant &amp; Trading</button>
+        <button class="chip" data-filter="systems" aria-pressed="false">Systems &amp; AI</button>
+      </div>
+      <div class="projects-grid" id="projectsGrid">
+        <article class="card" data-cat="quant">
+          <div class="card-tag">Quant · Deployed</div>
+          <h3>AI Stock Trend Predictor</h3>
+          <p>End-to-end market-direction predictor with confidence scoring and historical backtesting. Buy/Hold/Avoid signal logic, Kelly Criterion position sizing, and stop-loss/take-profit recommendations.</p>
+          <div class="card-stack"><span>Python</span><span>XGBoost</span><span>Pandas</span><span>FastAPI</span><span>Streamlit</span></div>
+          <div class="card-links"><a href="https://github.com/priyans-h" target="_blank" rel="noopener">Code ↗</a><a href="#" target="_blank" rel="noopener">Live demo ↗</a></div>
+        </article>
+        <article class="card" data-cat="quant">
+          <div class="card-tag">Quant · Research portfolio</div>
+          <h3>Five-Model Quant Research Backbone</h3>
+          <p>HMM regime switcher, FinBERT sentiment alpha engine, PPO RL trading agent, pairs trading / stat-arb system, and a cross-sectional momentum factor model on NSE equity and crypto data.</p>
+          <div class="card-stack"><span>Python</span><span>hmmlearn</span><span>PyTorch</span><span>Backtesting</span></div>
+          <div class="card-links"><a href="https://github.com/priyans-h" target="_blank" rel="noopener">Code ↗</a></div>
+        </article>
+        <article class="card" data-cat="systems">
+          <div class="card-tag sys">Systems &amp; AI · Live</div>
+          <h3>Karnataka Crime Intelligence Platform</h3>
+          <p>Crime-intelligence platform for Karnataka State Police (SCRB) processing 1.6M+ real FIR records — geospatial hotspot maps, network link analysis, AI/ML risk scoring. Bilingual, voice-enabled.</p>
+          <div class="card-stack"><span>React</span><span>Vite</span><span>Node.js</span><span>Zoho Catalyst</span></div>
+          <div class="card-links"><a href="https://github.com/priyans-h" target="_blank" rel="noopener">Code ↗</a><a href="#" target="_blank" rel="noopener">Live site ↗</a></div>
+        </article>
+        <article class="card" data-cat="systems">
+          <div class="card-tag sys">Systems &amp; AI · Hackathon</div>
+          <h3>FlowZint — AI Support Copilot</h3>
+          <p>RAG-based e-commerce support chatbot with auto-ticketing, sentiment-drift detection, and churn-risk prediction. Confidence-routing on Groq/Llama 3.1. Audited 85/100.</p>
+          <div class="card-stack"><span>React</span><span>FastAPI</span><span>Groq</span><span>Supabase</span><span>pgvector</span></div>
+          <div class="card-links"><a href="https://github.com/priyans-h" target="_blank" rel="noopener">Code ↗</a></div>
+        </article>
+        <article class="card" data-cat="systems">
+          <div class="card-tag sys">Systems &amp; AI · Hackathon</div>
+          <h3>VidyaFund AI</h3>
+          <p>Institutional fund-routing platform matching students to funding sources via urgency scoring and verification. FastAPI backend, React frontend, PostgreSQL persistence.</p>
+          <div class="card-stack"><span>FastAPI</span><span>React</span><span>PostgreSQL</span><span>Tailwind</span></div>
+          <div class="card-links"><a href="https://github.com/priyans-h" target="_blank" rel="noopener">Code ↗</a></div>
+        </article>
+        <article class="card" data-cat="systems">
+          <div class="card-tag sys">Systems &amp; AI · Personal</div>
+          <h3>VoteMate — Election Guide Assistant</h3>
+          <p>Civic-tech web app helping first-time Indian voters navigate registration, eligibility, and polling logistics. Context-aware Gemini-powered chatbot plus eligibility checker.</p>
+          <div class="card-stack"><span>JavaScript</span><span>Gemini API</span></div>
+          <div class="card-links"><a href="https://github.com/priyans-h" target="_blank" rel="noopener">Code ↗</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="research">
+    <div class="wrap reveal">
+      <div class="section-head">
+        <span class="eyebrow">Papers</span>
+        <h2>Research</h2>
+        <p>Independent research, written up honestly — including where the results don't clear statistical significance.</p>
+      </div>
+      <div class="research-item">
+        <h3>Regime-Aware Trading Strategies Using Hidden Markov Models</h3>
+        <div class="research-meta">Evidence from Indian Equity Indices &middot; Nifty50 &amp; Bank Nifty, 2015–2026</div>
+        <p>A Gaussian HMM regime-switching strategy evaluated on two Indian indices with expanding-window walk-forward retraining, consistent transaction costs, and a corrected trailing-return regime-labeling scheme.</p>
+        <div class="stat-row">
+          <div class="stat"><span class="num" data-count="49" data-prefix="+" data-suffix="%">0%</span><span class="lbl">Sharpe vs. buy-hold, Bank Nifty</span></div>
+          <div class="stat neg"><span class="num">n.s.</span><span class="lbl">Not significant at 95%</span></div>
+          <div class="stat"><span class="num">2-state</span><span class="lbl">Beats 3-state on Nifty50</span></div>
+        </div>
+        <div class="research-links"><a href="#">Read paper (PDF) ↗</a><a href="#">Overleaf / LaTeX source ↗</a></div>
+      </div>
+      <div class="research-item">
+        <h3>Taming the Storage Bill</h3>
+        <div class="research-meta">A Cost-Aware Dynamic Tiering Model for Reducing Data Storage Expenditure</div>
+        <p>Formulates data-tier placement as a per-object cost-minimization problem and proposes CADT — an online heuristic with a hysteresis migration threshold — evaluated against a static baseline over a seeded five-year simulation.</p>
+        <div class="stat-row">
+          <div class="stat"><span class="num" data-count="85.9" data-suffix="%">0%</span><span class="lbl">Cost reduction vs. static tiering</span></div>
+          <div class="stat"><span class="num" data-count="20">0</span><span class="lbl">Seeds, five-year horizon</span></div>
+          <div class="stat"><span class="num">±1pp</span><span class="lbl">Stable across growth rates</span></div>
+        </div>
+        <div class="research-links"><a href="#">Read paper (PDF) ↗</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap reveal">
+      <div class="section-head"><span class="eyebrow">Toolkit</span><h2>Skills</h2></div>
+      <div class="skills-grid">
+        <div class="skill-group"><h4>Quant &amp; ML</h4><ul>
+          <li>Python, Pandas, NumPy</li><li>Scikit-learn, PyTorch, XGBoost, LightGBM</li>
+          <li>hmmlearn, statistical backtesting</li><li>Regression, classification, model evaluation</li>
+        </ul></div>
+        <div class="skill-group"><h4>Backend &amp; Data</h4><ul>
+          <li>FastAPI, Flask, Node.js</li><li>PostgreSQL, Supabase, SQLite</li><li>SQL, data cleaning &amp; EDA</li>
+        </ul></div>
+        <div class="skill-group"><h4>Frontend &amp; Deployment</h4><ul>
+          <li>React, HTML, CSS, TailwindCSS</li><li>Streamlit, Power BI, Matplotlib/Seaborn</li>
+          <li>Vercel, Railway, Zoho Catalyst</li><li>Git, GitHub, Linux</li>
+        </ul></div>
+      </div>
+      <div style="margin-top:60px;">
+        <h3 style="font-size:1.15rem;margin-bottom:20px;">Education</h3>
+        <div class="edu-item"><div><h3>B.S. Data Science &amp; Applications</h3><div class="inst">Indian Institute of Technology Madras</div></div><div class="yr">Expected 07/2028</div></div>
+        <div class="edu-item"><div><h3>High School Diploma</h3><div class="inst">Saraswati Vidya Mandir, Agra</div></div><div class="yr">05/2024</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap reveal">
+      <footer style="border-top:none;padding-top:0;">
+        <span class="eyebrow">Get in touch</span>
+        <h2 class="contact-h">Building something quant-shaped? Let's talk.</h2>
+        <div class="contact-links">
+          <a href="mailto:priyanshchaudhary176@gmail.com">priyanshchaudhary176@gmail.com</a>
+          <a href="https://github.com/priyans-h" target="_blank" rel="noopener">GitHub ↗</a>
+          <a href="https://linkedin.com/in/chaudhary--priyansh" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a href="#" target="_blank" rel="noopener">Resume (PDF) ↗</a>
+        </div>
+        <div class="foot-note">Agra, India &middot; Built with HTML, CSS, and a mild obsession with regimes.</div>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script>
+  // mobile menu
+  const menuBtn = document.getElementById('menuBtn');
+  const navlinks = document.getElementById('navlinks');
+  menuBtn.addEventListener('click', () => {
+    const open = navlinks.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open);
+  });
+  navlinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navlinks.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false');
+  }));
+
+  // project filter
+  const chips = document.querySelectorAll('.chip');
+  const cards = document.querySelectorAll('#projectsGrid .card');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chips.forEach(c => c.setAttribute('aria-pressed', 'false'));
+      chip.setAttribute('aria-pressed', 'true');
+      const filter = chip.dataset.filter;
+      cards.forEach(card => { card.style.display = (filter === 'all' || card.dataset.cat === filter) ? 'flex' : 'none'; });
+    });
+  });
+
+  // ===== mosaic photo reveal =====
+  (function initMosaic(){
+    const grid = document.getElementById('mosaicGrid');
+    if (!grid) return;
+    // 6-column pattern approximating a head/shoulders silhouette (1 = filled tile, 0 = empty)
+    const cols = 6, rows = 7;
+    const pattern = [
+      0,1,1,1,1,0,
+      0,0,1,1,0,0,
+      0,1,1,1,1,0,
+      1,1,1,1,1,1,
+      1,1,0,0,1,1,
+      0,1,1,1,1,0,
+      1,0,0,0,0,1,
+    ];
+    pattern.forEach((v, i) => {
+      const tile = document.createElement('div');
+      tile.className = 'tile' + (v ? ' tile-filled' : '');
+      tile.style.transitionDelay = (i * 28) + 'ms';
+      if (v) {
+        const col = i % cols, row = Math.floor(i / cols);
+        tile.style.backgroundImage = "url('priyansh-photo.png')";
+        tile.style.backgroundSize = (cols * 100) + '% ' + (rows * 100) + '%';
+        tile.style.backgroundPosition = (col / (cols - 1) * 100) + '% ' + (row / (rows - 1) * 100) + '%';
+      }
+      grid.appendChild(tile);
+    });
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) { grid.classList.add('in'); io.unobserve(entry.target); }
+        });
+      }, { threshold: 0.4 });
+      io.observe(grid);
+    } else {
+      grid.classList.add('in');
+    }
+  })();
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // kinetic name — split into letter spans
+  const nameText = "PRIYANSH";
+  const nameEl = document.getElementById('kineticName');
+  nameText.split('').forEach(ch => {
+    const span = document.createElement('span');
+    span.textContent = ch;
+    nameEl.appendChild(span);
+  });
+
+  // ===== changing role headline =====
+  const roles = ["QUANT RESEARCHER", "ML SYSTEMS BUILDER", "FULL-STACK DEVELOPER", "CURIOUS BUILDER"];
+  const roleColors = ["#3F6B2E", "#4B3F91", "#3F6B2E", "#4B3F91"];
+  let roleIndex = 0;
+  const rotator = document.getElementById('roleRotator');
+  function cycleRole() {
+    rotator.style.opacity = 0;
+    rotator.style.transform = 'translateY(24px)';
+    setTimeout(() => {
+      roleIndex = (roleIndex + 1) % roles.length;
+      rotator.textContent = roles[roleIndex];
+      rotator.style.color = roleColors[roleIndex];
+      rotator.style.transform = 'translateY(-24px)';
+      requestAnimationFrame(() => {
+        rotator.style.transition = 'none';
+        void rotator.offsetHeight;
+        rotator.style.transition = 'opacity .35s ease, transform .35s ease';
+        rotator.style.opacity = 1;
+        rotator.style.transform = 'translateY(0)';
+      });
+    }, 350);
+  }
+  if (!reduceMotion) { setInterval(cycleRole, 2600); }
+
+  // cursor glow
+  const glow = document.getElementById('glow');
+  if (!reduceMotion) {
+    window.addEventListener('pointermove', e => {
+      glow.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%,-50%)`;
+      glow.style.opacity = 1;
+    });
+  } else {
+    glow.style.display = 'none';
+  }
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); } });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+
+  // ===== 3D hero: rippling wireframe market-surface + drifting data points =====
+  (function initHero3D(){
+    const container = document.getElementById('hero3d');
+    if (reduceMotion || typeof THREE === 'undefined') return;
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0xF2EFE6, 6, 22);
+
+    const camera = new THREE.PerspectiveCamera(55, container.offsetWidth / container.offsetHeight, 0.1, 100);
+    camera.position.set(0, 3.2, 8.5);
+    camera.lookAt(0, 0, -2);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    container.appendChild(renderer.domElement);
+
+    // rippling grid "market surface"
+    const gridSize = 22, seg = 44;
+    const geo = new THREE.PlaneGeometry(gridSize, gridSize, seg, seg);
+    geo.rotateX(-Math.PI / 2);
+    const mat = new THREE.MeshBasicMaterial({ color: 0x3F6B2E, wireframe: true, transparent: true, opacity: 0.32 });
+    const grid = new THREE.Mesh(geo, mat);
+    grid.position.y = -1.4;
+    scene.add(grid);
+
+    const posAttr = geo.attributes.position;
+    const basePositions = Float32Array.from(posAttr.array);
+
+    // floating data points
+    const ptCount = 90;
+    const ptGeo = new THREE.BufferGeometry();
+    const ptPos = new Float32Array(ptCount * 3);
+    for (let i = 0; i < ptCount; i++) {
+      ptPos[i*3] = (Math.random() - 0.5) * gridSize;
+      ptPos[i*3+1] = Math.random() * 5 - 1;
+      ptPos[i*3+2] = (Math.random() - 0.5) * gridSize - 4;
+    }
+    ptGeo.setAttribute('position', new THREE.BufferAttribute(ptPos, 3));
+    const ptMat = new THREE.PointsMaterial({ color: 0x4B3F91, size: 0.07, transparent: true, opacity: 0.75 });
+    const points = new THREE.Points(ptGeo, ptMat);
+    scene.add(points);
+
+    let mouseX = 0, mouseY = 0, targetRotX = 0, targetRotY = 0;
+    window.addEventListener('pointermove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+    });
+
+    const clock = new THREE.Clock();
+    function animate() {
+      const t = clock.getElapsedTime();
+
+      // ripple the grid
+      for (let i = 0; i < posAttr.count; i++) {
+        const x = basePositions[i*3];
+        const z = basePositions[i*3+2];
+        const y = Math.sin(x * 0.5 + t * 0.6) * 0.28 + Math.cos(z * 0.4 + t * 0.5) * 0.22;
+        posAttr.setY(i, y);
+      }
+      posAttr.needsUpdate = true;
+
+      // drift points upward, recycle
+      const pa = ptGeo.attributes.position.array;
+      for (let i = 0; i < ptCount; i++) {
+        pa[i*3+1] += 0.004;
+        if (pa[i*3+1] > 4) pa[i*3+1] = -1.5;
+      }
+      ptGeo.attributes.position.needsUpdate = true;
+
+      // gentle camera parallax toward mouse
+      targetRotY += (mouseX * 0.35 - targetRotY) * 0.03;
+      targetRotX += (mouseY * 0.15 - targetRotX) * 0.03;
+      camera.position.x = targetRotY * 2;
+      camera.position.y = 3.2 - targetRotX;
+      camera.lookAt(0, 0, -2);
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = container.offsetWidth / container.offsetHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.offsetWidth, container.offsetHeight);
+    });
+  })();
+
+  // ===== 3D tilt on project cards =====
+  if (!reduceMotion) {
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left, y = e.clientY - rect.top;
+        const rotY = ((x / rect.width) - 0.5) * 10;
+        const rotX = ((y / rect.height) - 0.5) * -10;
+        card.style.transform = `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-4px)`;
+      });
+      card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+    });
+  }
+
+  // ===== magnetic buttons =====
+  if (!reduceMotion) {
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+      });
+      btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+    });
+  }
+
+  // ===== animated counters =====
+  const counters = document.querySelectorAll('.num[data-count]');
+  const countIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseFloat(el.dataset.count);
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const isDecimal = String(target).includes('.');
+      el.classList.add('counting');
+      let start = null;
+      const dur = 1100;
+      function step(ts) {
+        if (!start) start = ts;
+        const progress = Math.min((ts - start) / dur, 1);
+        const val = target * progress;
+        el.textContent = prefix + (isDecimal ? val.toFixed(1) : Math.round(val)) + suffix;
+        if (progress < 1) requestAnimationFrame(step); else el.classList.remove('counting');
+      }
+      requestAnimationFrame(step);
+      countIO.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => countIO.observe(el));
+</script>
+</body>
+</html>
